@@ -1,0 +1,35 @@
+package me.leoo.guilds.api.events.player;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import me.leoo.guilds.api.objects.guild.GuildView;
+import me.leoo.guilds.api.objects.player.PlayerView;
+import me.leoo.guilds.api.objects.rank.RankView;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class GuildDemoteEvent extends Event implements Cancellable {
+
+    private static final HandlerList HANDLERS = new HandlerList();
+
+    private final GuildView guild;
+
+    private final PlayerView player;
+    private final RankView oldRank;
+    private final RankView newRank;
+
+    private boolean cancelled;
+
+    public HandlerList getHandlers() {
+        return HANDLERS;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+}
