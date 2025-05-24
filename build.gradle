@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow'  version '8.1.1'
     id 'io.github.goooler.shadow' version '8.1.7' // Java 21 fix
 }
 
@@ -16,6 +18,7 @@ repositories {
     mavenLocal()
 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -26,10 +29,10 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
 
     // Utils
-    implementation "me.leoo.utils:common:${utilsVersion}"
-    implementation "me.leoo.utils:bukkit:${utilsVersion}"
-    implementation "me.leoo.utils:redis:${utilsVersion}"
-    implementation "me.leoo.utils:bungee:${utilsVersion}"
+    implementation "com.github.leo18bernese.Utils:common:${utilsVersion}"
+    implementation "com.github.leo18bernese.Utils:bukkit:${utilsVersion}"
+    implementation "com.github.leo18bernese.Utils:redis:${utilsVersion}"
+    implementation "com.github.leo18bernese.Utils:bungee:${utilsVersion}"
 }
 
 shadowJar {
@@ -43,5 +46,22 @@ shadowJar {
 
     minimize {
         exclude(dependency('net.wesjd:.*'))
+    }
+
+    finalizedBy publishToMavenLocal
+}
+
+processResources {
+    filteringCharset 'UTF-8'
+    expand 'version': project.version
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+
+            artifactId = 'api'
+        }
     }
 }
