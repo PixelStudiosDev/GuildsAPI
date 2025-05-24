@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'me.leoo.guilds'
-version = '1.0-SNAPSHOT'
+version = '1.0.1-SNAPSHOT'
 
 ext {
     utilsVersion = '2.0.0'
@@ -15,7 +15,6 @@ ext {
 
 repositories {
     mavenCentral()
-    mavenLocal()
 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://oss.sonatype.org/content/groups/public/' }
