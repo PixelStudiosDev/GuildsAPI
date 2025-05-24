@@ -1,0 +1,70 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  check_commit:
+    runs-on: ubuntu-latest
+    outputs:
+      is_release: ${{ steps.check.outputs.is_release }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Check commit message
+        id: check
+        run: |
+          message=$(git log --format=%B -n 1 ${{ github.sha }})
+          echo "Commit message: $message"
+          if [[ $message == "updated version"* ]]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "Commit message starts with 'updated version'"
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "Commit message does not start with 'updated version'"
+          fi
+
+  release:
+    needs: check_commit
+    if: needs.check_commit.outputs.is_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get commit message
+        run: |
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          echo "Commit message: $COMMIT_MESSAGE"
+
+      - name: Get version
+        run: |
+          VERSION=$(echo $COMMIT_MESSAGE | awk 'BEGIN{FS=" "} {print $NF}')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version: $VERSION"
+
+      - name: Get release description
+        run: |
+          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version")
+          echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
+          echo "$DESCRIPTION" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Release description: $DESCRIPTION"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          body: ${{ env.DESCRIPTION }}
