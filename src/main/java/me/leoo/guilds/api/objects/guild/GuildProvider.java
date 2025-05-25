@@ -25,4 +25,7 @@ public interface GuildProvider {
     void deleteGuild(GuildView guild);
 
     boolean hasGuild(UUID uuid);
+
+    // Quest
+    void addQuestProgress(Player guildUuid, int amount);
 }
