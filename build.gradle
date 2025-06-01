@@ -71,3 +71,7 @@ publishing {
         }
     }
 }
+
+javadocJar {
+    archiveFileName = 'javadoc.jar'
+}
