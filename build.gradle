@@ -21,6 +21,11 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
 
@@ -48,6 +53,7 @@ shadowJar {
         exclude(dependency('net.wesjd:.*'))
     }
 
+    finalizedBy javadocJar
     finalizedBy publishToMavenLocal
 }
 

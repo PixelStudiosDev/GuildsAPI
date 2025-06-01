@@ -5,9 +5,24 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * GuildProvider interface for managing guilds.
+ * Provides methods to retrieve, create, and manipulate guilds.
+ */
 public interface GuildProvider {
 
+    /**
+     * Get a guild by its UUID.
+     * @param uuid of the guild
+     * @return GuildView if found, null otherwise
+     */
     GuildView getByUuid(UUID uuid);
+
+    /**
+     * Get a guild by its name.
+     * @param name of the guild
+     * @return GuildView if found, null otherwise
+     */
     GuildView getByName(String name);
     GuildView getByPlayer(Player player);
     GuildView getByPlayer(UUID player);
