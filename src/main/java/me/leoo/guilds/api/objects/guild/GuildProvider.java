@@ -30,12 +30,6 @@ public interface GuildProvider {
     List<GuildView> getGuilds();
     List<GuildView> getShownGuilds();
 
-    void addXp(Player player, int xp);
-    void addLevel(Player player, int level);
-
-    void removeXp(Player player, int xp);
-    void removeLevel(Player player, int level);
-
     GuildView createGuild(String guildName, UUID leader);
     void deleteGuild(GuildView guild);
 
