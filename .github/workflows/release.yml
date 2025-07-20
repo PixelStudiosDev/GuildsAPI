@@ -53,7 +53,7 @@ jobs:
 
       - name: Get release description
         run: |
-          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version")
+          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version" || true)
           echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
           echo "$DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
