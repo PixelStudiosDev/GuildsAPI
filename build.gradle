@@ -7,10 +7,10 @@ plugins {
 }
 
 group = 'me.leoo.guilds'
-version = '1.0.3-SNAPSHOT'
+version = '1.0.4-SNAPSHOT'
 
 ext {
-    utilsVersion = '2.0.0'
+    utilsVersion = '2.1.0'
 }
 
 repositories {
