@@ -2,15 +2,15 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'java-library'
-    id 'com.github.johnrengelman.shadow'  version '8.1.1'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'io.github.goooler.shadow' version '8.1.7' // Java 21 fix
 }
 
 group = 'me.leoo.guilds'
-version = '1.0.4-SNAPSHOT'
+version = '1.0.5-SNAPSHOT'
 
 ext {
-    utilsVersion = '2.1.0'
+    utilsVersion = '2.1.7'
 }
 
 repositories {
@@ -19,6 +19,9 @@ repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://oss.sonatype.org/content/groups/public/' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.codemc.io/repository/maven-snapshots/' }
+    maven { url 'https://repo.codemc.io/repository/maven-public/' }
+    maven { url 'https://repo.glaremasters.me/repository/public/' }
 }
 
 java {
@@ -30,6 +33,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation("com.mojang:brigadier:1.2.9")
 
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
 
