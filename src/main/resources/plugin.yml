@@ -1,0 +1,6 @@
+name: GuildAPI
+version: ${version}
+author: itz_leoo
+main: me.leoo.guilds.api.objects.GuildAPI
+description: API for the Guilds plugin by itz_leoo
+depend: [ Guilds ]
