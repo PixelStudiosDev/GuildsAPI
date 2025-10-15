@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class GuildAPI extends JavaPlugin {
+public class GuildAPI  {
 
     private static Plugin plugin;
 
