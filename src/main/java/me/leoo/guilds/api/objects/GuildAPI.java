@@ -1,6 +1,7 @@
 package me.leoo.guilds.api.objects;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.leoo.guilds.api.objects.guild.GuildProvider;
 import me.leoo.guilds.api.objects.level.LevelProvider;
 import me.leoo.guilds.api.objects.player.PlayerProvider;
@@ -9,39 +10,37 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 @Getter
-public class GuildAPI {
+@RequiredArgsConstructor
+public final class GuildAPI {
 
     private static GuildAPI instance;
 
-    private Plugin plugin;
+    private final GuildProvider guildProvider;
+    private final LevelProvider levelProvider;
+    private final PlayerProvider playerProvider;
+    private final UtilsProvider utilsProvider;
 
-    private GuildProvider guildProvider;
-    private LevelProvider levelProvider;
-    private PlayerProvider playerProvider;
-    private UtilsProvider utilsProvider;
+    public static void register(GuildProvider guildImpl, LevelProvider levelImpl, PlayerProvider playerImpl, UtilsProvider utilsImpl) {
+        if (instance != null) {
+            Bukkit.getLogger().warning("GuildAPI is already registered!");
+            return;
+        }
 
+        instance = new GuildAPI(guildImpl, levelImpl, playerImpl, utilsImpl);
 
-    public void register(GuildProvider guildImpl, LevelProvider levelImpl, PlayerProvider playerImpl, UtilsProvider utilsImpl) {
-        guildProvider = guildImpl;
-        levelProvider = levelImpl;
-        playerProvider = playerImpl;
-        utilsProvider = utilsImpl;
+        Bukkit.getLogger().info("GuildAPI has been registered successfully.");
     }
 
     public void debug(String message) {
         utilsProvider.debug(message);
     }
 
-    public void disable() {
-        if (plugin == null) return;
-
-        Bukkit.getScheduler().cancelTasks(plugin);
-    }
-
     public static GuildAPI get() {
         if (instance == null) {
-            instance = new GuildAPI();
+            throw new IllegalStateException("GuildAPI has not been initialized yet!");
         }
+
         return instance;
     }
+
 }
