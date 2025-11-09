@@ -7,10 +7,10 @@ plugins {
 }
 
 group = 'me.leoo.guilds'
-version = '1.1.0-SNAPSHOT'
+version = '1.1.1-SNAPSHOT'
 
 ext {
-    utilsVersion = '2.1.7'
+    utilsVersion = '2.1.9'
 }
 
 repositories {
@@ -30,9 +30,9 @@ java {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
     implementation("com.mojang:brigadier:1.2.9")
 
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
