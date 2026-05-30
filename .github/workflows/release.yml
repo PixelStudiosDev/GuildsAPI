@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -43,28 +43,25 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
           echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
-          echo "Commit message: $COMMIT_MESSAGE"
 
       - name: Get version
         run: |
-          VERSION=$(echo $COMMIT_MESSAGE | awk 'BEGIN{FS=" "} {print $NF}')
+          # Estrae l'ultima parola del messaggio di commit
+          VERSION=$(echo $COMMIT_MESSAGE | awk '{print $NF}')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Version: $VERSION"
 
       - name: Get release description
         run: |
+          # Estrae i log tra il commit precedente e quello attuale
           DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version" || true)
           echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
           echo "$DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          echo "Release description: $DESCRIPTION"
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+        uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.PAT }}
           tag_name: ${{ env.VERSION }}
-          release_name: Release ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           body: ${{ env.DESCRIPTION }}
