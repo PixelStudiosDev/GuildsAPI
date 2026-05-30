@@ -5,7 +5,7 @@ on:
     branches:
       - master
 
-# Aggiunge i permessi in scrittura al token automatico di GitHub
+# 1. FIX ACCESSO: Concede i permessi di scrittura per creare la release
 permissions:
   contents: write
 
@@ -57,7 +57,8 @@ jobs:
 
       - name: Get release description
         run: |
-          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version")
+          # 2. FIX CRASH: Aggiunto "|| true" alla fine per evitare l'exit code 1 se non ci sono altri commit
+          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version" || true)
           echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
           echo "$DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -65,9 +66,9 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v2 # Sostituisce la vecchia action deprecata
+        uses: softprops/action-gh-release@v2 # Nuova action ufficiale aggiornata
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Usa il token nativo, niente PAT
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Usa il token automatico di GitHub, non serve il tuo PAT
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
