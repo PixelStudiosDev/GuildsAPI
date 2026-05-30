@@ -23,10 +23,8 @@ jobs:
           echo "Commit message: $message"
           if [[ $message == "updated version"* ]]; then
             echo "is_release=true" >> $GITHUB_OUTPUT
-            echo "Commit message starts with 'updated version'"
           else
             echo "is_release=false" >> $GITHUB_OUTPUT
-            echo "Commit message does not start with 'updated version'"
           fi
 
   release:
@@ -38,25 +36,27 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Get commit message
-        run: |
-          COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
-          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          token: ${{ secrets.PAT }}
 
       - name: Get version
         run: |
-          # Estrae l'ultima parola del messaggio di commit
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
           VERSION=$(echo $COMMIT_MESSAGE | awk '{print $NF}')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Get release description
         run: |
-          # Estrae i log tra il commit precedente e quello attuale
           DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version" || true)
           echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
           echo "$DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+
+      - name: Create tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ env.VERSION }}
+          git push origin ${{ env.VERSION }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
