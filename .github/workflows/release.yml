@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+# Aggiunge i permessi in scrittura al token automatico di GitHub
+permissions:
+  contents: write
+
 jobs:
   check_commit:
     runs-on: ubuntu-latest
@@ -12,7 +16,7 @@ jobs:
       is_release: ${{ steps.check.outputs.is_release }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4 # Aggiornato alla v4
         with:
           fetch-depth: 2
 
@@ -23,8 +27,10 @@ jobs:
           echo "Commit message: $message"
           if [[ $message == "updated version"* ]]; then
             echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "Commit message starts with 'updated version'"
           else
             echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "Commit message does not start with 'updated version'"
           fi
 
   release:
@@ -33,35 +39,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Aggiornato alla v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.PAT }}
+
+      - name: Get commit message
+        run: |
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          echo "Commit message: $COMMIT_MESSAGE"
 
       - name: Get version
         run: |
-          COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
-          VERSION=$(echo $COMMIT_MESSAGE | awk '{print $NF}')
+          VERSION=$(echo $COMMIT_MESSAGE | awk 'BEGIN{FS=" "} {print $NF}')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version: $VERSION"
 
       - name: Get release description
         run: |
-          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version" || true)
+          DESCRIPTION=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:'- %s' | grep -v "updated version")
           echo "DESCRIPTION<<EOF" >> $GITHUB_ENV
           echo "$DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: Create tag
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag ${{ env.VERSION }}
-          git push origin ${{ env.VERSION }}
+          echo "Release description: $DESCRIPTION"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        id: create_release
+        uses: softprops/action-gh-release@v2 # Sostituisce la vecchia action deprecata
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Usa il token nativo, niente PAT
         with:
-          token: ${{ secrets.PAT }}
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body: ${{ env.DESCRIPTION }}
